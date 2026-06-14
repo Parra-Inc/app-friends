@@ -1,0 +1,56 @@
+// -----------------------------------------------------------------------------
+// Billing — Stripe subscription, wallet ledger, webhook idempotency
+// -----------------------------------------------------------------------------
+
+model Subscription {
+  id                   String    @id @default(dbgenerated("'sub_' || gen_random_uuid()::text"))
+  workspaceId          String    @unique
+  workspace            Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  stripeCustomerId     String    @unique
+  stripeSubscriptionId String    @unique
+  stripePriceId        String
+  status               String
+  currentPeriodEnd     DateTime
+  cancelAt             DateTime?
+  canceledAt           DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum LedgerType {
+  TOPUP // wallet credit purchased via Stripe
+  SPEND // campaign spend debit
+  REFUND
+  PAYOUT // publisher earnings paid out
+  ADJUST
+}
+
+/// Append-only wallet ledger. `balanceCents` is the running wallet balance after
+/// the entry, mirrored onto `Workspace.walletCents`.
+model LedgerEntry {
+  id                    String     @id @default(dbgenerated("'led_' || gen_random_uuid()::text"))
+  workspaceId           String
+  workspace             Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  type                  LedgerType
+  amountCents           Int // positive = credit, negative = debit
+  balanceCents          Int // wallet balance after this entry
+  campaignId            String?
+  description           String?
+  stripePaymentIntentId String?
+  createdAt             DateTime   @default(now())
+
+  @@index([workspaceId, createdAt])
+}
+
+model WebhookEvent {
+  id          String    @id @default(dbgenerated("'whe_' || gen_random_uuid()::text"))
+  provider    String // "stripe"
+  eventId     String    @unique
+  type        String
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+  error       String?
+
+  @@index([type])
+}

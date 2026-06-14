@@ -1,0 +1,96 @@
+// -----------------------------------------------------------------------------
+// Registered apps, API keys, App Store Connect credentials
+// -----------------------------------------------------------------------------
+
+enum Platform {
+  IOS
+  ANDROID
+}
+
+enum AppStatus {
+  ACTIVE
+  PAUSED
+  PENDING
+}
+
+model App {
+  id          String    @id @default(dbgenerated("'app_' || gen_random_uuid()::text"))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  bundleId String // com.acme.app  (unique per platform)
+  platform Platform @default(IOS)
+  name     String
+  subtitle String?
+  iconUrl  String?
+  storeUrl String?
+  storeId  String? // App Store numeric id / Play package id
+  category String? // primary category — used for the overlap guard
+
+  ratingAvg   Float?
+  ratingCount Int?
+
+  status AppStatus @default(ACTIVE)
+
+  // Creative shown when THIS app is promoted inside another app.
+  promoHeadline    String?
+  promoSubtitle    String?
+  promoScreenshots String[] @default([])
+
+  // Publisher participation flags.
+  acceptsPairings  Boolean @default(true)
+  acceptsSponsored Boolean @default(true)
+
+  ascAppId String? // App Store Connect app id, for metadata import
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pairingsAsA          Pairing[]    @relation("PairingAppA")
+  pairingsAsB          Pairing[]    @relation("PairingAppB")
+  campaigns            Campaign[] // campaigns advertising THIS app
+  approvalsAsPublisher AdApproval[] @relation("ApprovalPublisherApp")
+  eventsAsPublisher    PromoEvent[] @relation("EventPublisherApp")
+  eventsAsPromoted     PromoEvent[] @relation("EventPromotedApp")
+  dailyStats           DailyStat[]
+
+  @@unique([platform, bundleId])
+  @@index([workspaceId])
+  @@index([category])
+  @@index([status])
+}
+
+enum ApiKeyScope {
+  PUBLISHABLE // safe to ship in a client SDK; read promotions + post events
+  SECRET // server-to-server; full access
+}
+
+model ApiKey {
+  id          String      @id @default(dbgenerated("'key_' || gen_random_uuid()::text"))
+  workspaceId String
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  scope       ApiKeyScope @default(PUBLISHABLE)
+  prefix      String // shown in the UI, e.g. "afp_a1b2"
+  hash        String      @unique // sha-256 of the raw key
+  label       String?
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime    @default(now())
+
+  @@index([workspaceId])
+}
+
+model AscCredential {
+  id            String    @id @default(dbgenerated("'asc_' || gen_random_uuid()::text"))
+  workspaceId   String
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  issuerId      String
+  keyId         String
+  privateKeyEnc String // AES-256-GCM encrypted .p8 private key
+  label         String?
+  lastSyncedAt  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([workspaceId])
+}

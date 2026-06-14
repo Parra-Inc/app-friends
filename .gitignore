@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Builds
+.turbo/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# Env
+.env
+.env*.local
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+*.pem
+.vscode/
+.idea/
+
+# Prisma
+web/prisma/migrations/dev.db*
+
+# Swift
+.build/
+.swiftpm/
+*.xcodeproj/xcuserdata/
+DerivedData/
+sdks/swift/.swiftpm/
+
+# React Native SDK build artifacts
+sdks/react-native/lib/
+sdks/react-native/node_modules/
+
+# Vercel
+.vercel

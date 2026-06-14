@@ -1,0 +1,163 @@
+// -----------------------------------------------------------------------------
+// The network: pairings (view-for-view), campaigns (sponsored), approvals,
+// events, and daily rollups.
+// -----------------------------------------------------------------------------
+
+enum PairingStatus {
+  REQUESTED
+  ACTIVE
+  DECLINED
+  PAUSED
+}
+
+/// A reciprocal cross-promotion between two non-competing apps.
+/// `appA` / `appB` are stored in canonical order (appAId < appBId) so the pair
+/// is unique regardless of who initiated.
+model Pairing {
+  id     String        @id @default(dbgenerated("'par_' || gen_random_uuid()::text"))
+  appAId String
+  appBId String
+  appA   App           @relation("PairingAppA", fields: [appAId], references: [id], onDelete: Cascade)
+  appB   App           @relation("PairingAppB", fields: [appBId], references: [id], onDelete: Cascade)
+  status PairingStatus @default(REQUESTED)
+
+  /// Which app sent the request (must be appAId or appBId).
+  requestedByAppId String
+  message          String?
+
+  /// Impressions A→B minus B→A. Drives balancing: the app that is "behind"
+  /// gets shown more until the exchange evens out.
+  balance Int @default(0)
+
+  respondedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([appAId, appBId])
+  @@index([appBId])
+  @@index([status])
+}
+
+enum PricingModel {
+  CPI // cost per install
+  CPM // cost per 1000 impressions
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  DEPLETED
+  ENDED
+}
+
+/// A sponsored campaign: an advertiser pays to show `app` inside other apps.
+model Campaign {
+  id          String    @id @default(dbgenerated("'cmp_' || gen_random_uuid()::text"))
+  workspaceId String // advertiser
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  appId       String // the app being advertised
+  app         App       @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+  name             String
+  pricingModel     PricingModel   @default(CPI)
+  bidCents         Int // per install (CPI) or per 1000 impressions (CPM)
+  dailyBudgetCents Int?
+  totalBudgetCents Int
+  spentCents       Int            @default(0)
+  targetCategories String[]       @default([])
+  targetPlatforms  Platform[]     @default([])
+  targetCountries  String[]       @default([])
+  status           CampaignStatus @default(DRAFT)
+  startsAt         DateTime?
+  endsAt           DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  approvals AdApproval[]
+  events    PromoEvent[]
+
+  @@index([workspaceId])
+  @@index([status])
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  BLOCKED
+}
+
+/// A publisher app's decision on whether a given campaign may run inside it.
+model AdApproval {
+  id                   String         @id @default(dbgenerated("'apr_' || gen_random_uuid()::text"))
+  publisherAppId       String
+  publisherApp         App            @relation("ApprovalPublisherApp", fields: [publisherAppId], references: [id], onDelete: Cascade)
+  publisherWorkspaceId String
+  publisherWorkspace   Workspace      @relation("PublisherApprovals", fields: [publisherWorkspaceId], references: [id], onDelete: Cascade)
+  campaignId           String
+  campaign             Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  status               ApprovalStatus @default(PENDING)
+  decidedAt            DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([publisherAppId, campaignId])
+  @@index([campaignId])
+  @@index([publisherWorkspaceId, status])
+}
+
+enum PromoEventType {
+  IMPRESSION
+  TAP
+  INSTALL
+}
+
+enum PromoSource {
+  PAIRING
+  CAMPAIGN
+}
+
+/// Append-only event log. The `token` is minted at impression time and echoed
+/// on tap/install, so we can attribute and dedupe.
+model PromoEvent {
+  id             String         @id @default(dbgenerated("'evt_' || gen_random_uuid()::text"))
+  token          String
+  type           PromoEventType
+  source         PromoSource
+  publisherAppId String
+  publisherApp   App            @relation("EventPublisherApp", fields: [publisherAppId], references: [id], onDelete: Cascade)
+  promotedAppId  String
+  promotedApp    App            @relation("EventPromotedApp", fields: [promotedAppId], references: [id], onDelete: Cascade)
+  campaignId     String?
+  campaign       Campaign?      @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  placement      String // POPUP | FULLSCREEN | BANNER
+  country        String?
+  valueCents     Int            @default(0) // attributed spend for sponsored events
+  createdAt      DateTime       @default(now())
+
+  @@unique([token, type])
+  @@index([publisherAppId, createdAt])
+  @@index([promotedAppId, createdAt])
+  @@index([campaignId, createdAt])
+}
+
+/// Per (app × role × source × day) rollup. Powers dashboards without scanning
+/// the raw event log.
+model DailyStat {
+  id          String      @id @default(dbgenerated("'day_' || gen_random_uuid()::text"))
+  day         DateTime    @db.Date
+  appId       String
+  app         App         @relation(fields: [appId], references: [id], onDelete: Cascade)
+  role        String // PUBLISHER (this app showed others) | PROMOTED (this app was shown)
+  source      PromoSource
+  impressions Int         @default(0)
+  taps        Int         @default(0)
+  installs    Int         @default(0)
+  spendCents  Int         @default(0) // money this app's workspace spent (advertiser)
+  earnedCents Int         @default(0) // money this app's workspace earned (publisher)
+
+  @@unique([day, appId, role, source])
+  @@index([appId, day])
+}

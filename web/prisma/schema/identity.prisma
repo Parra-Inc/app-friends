@@ -1,0 +1,146 @@
+// -----------------------------------------------------------------------------
+// Users & auth (NextAuth) + workspaces / teams
+// -----------------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(dbgenerated("'usr_' || gen_random_uuid()::text"))
+  email         String    @unique
+  name          String?
+  image         String?
+  googleId      String?   @unique
+  githubId      String?   @unique
+  githubLogin   String?
+  appleId       String?   @unique
+  emailVerified DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts       Account[]
+  sessions       Session[]
+  memberships    Membership[]
+  createdInvites Invitation[] @relation("InvitationInvitedBy")
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+enum WorkspacePlan {
+  FREE
+  PRO
+}
+
+model Workspace {
+  id       String        @id @default(dbgenerated("'wsp_' || gen_random_uuid()::text"))
+  name     String
+  slug     String        @unique
+  imageUrl String?
+  plan     WorkspacePlan @default(FREE)
+
+  /// Running view-for-view balance across all pairings (impressions given − received).
+  /// Positive = this workspace is owed promo views by the network.
+  balance Int @default(0)
+
+  /// Prepaid wallet for sponsored campaign spend, in cents.
+  walletCents Int @default(0)
+
+  /// When true, incoming advertisers may run in this workspace's apps without
+  /// per-campaign approval (publishers can still block individual advertisers).
+  autoApproveAdvertisers Boolean @default(false)
+
+  // Billing (Stripe)
+  stripeCustomerId             String?   @unique
+  stripeSubscriptionId         String?   @unique
+  subscriptionStatus           String?
+  subscriptionCurrentPeriodEnd DateTime?
+
+  suspendedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  memberships    Membership[]
+  apps           App[]
+  apiKeys        ApiKey[]
+  ascCredentials AscCredential[]
+  invitations    Invitation[]
+  campaigns      Campaign[]
+  approvals      AdApproval[]    @relation("PublisherApprovals")
+  ledgerEntries  LedgerEntry[]
+  subscription   Subscription?
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model Membership {
+  id          String     @id @default(dbgenerated("'mbr_' || gen_random_uuid()::text"))
+  userId      String
+  workspaceId String
+  role        MemberRole @default(MEMBER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+  @@index([workspaceId])
+}
+
+model Invitation {
+  id          String     @id @default(dbgenerated("'inv_' || gen_random_uuid()::text"))
+  workspaceId String
+  email       String
+  role        MemberRole @default(MEMBER)
+  token       String     @unique
+  invitedById String
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime   @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invitedBy User      @relation("InvitationInvitedBy", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, email])
+}

@@ -1,0 +1,17 @@
+{
+  "name": "app-friends",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "dev": "bash scripts/dev.sh",
+    "dev:force": "bash scripts/dev.sh --force",
+    "dev:ngrok": "bash scripts/dev.sh --ngrok",
+    "dev:web": "cd web && pnpm dev:web",
+    "up": "cd web && docker compose up -d --wait",
+    "down": "cd web && docker compose down"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4"
+  }
+}

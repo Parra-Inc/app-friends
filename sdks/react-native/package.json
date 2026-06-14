@@ -1,0 +1,48 @@
+{
+  "name": "@parra/app-friends",
+  "version": "0.1.0-alpha.0",
+  "description": "React Native SDK for App Friends — a cross-promotion network for app developers.",
+  "license": "MIT",
+  "author": "Parra Inc.",
+  "homepage": "https://appfriends.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Parra-Inc/app-friends.git",
+    "directory": "sdks/react-native"
+  },
+  "bugs": {
+    "url": "https://github.com/Parra-Inc/app-friends/issues"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "keywords": [
+    "appfriends",
+    "parra",
+    "react-native",
+    "cross-promotion",
+    "app-promotion",
+    "ads"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prepare": "tsc"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-native": ">=0.68.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "react": "^18.2.0",
+    "typescript": "^5.4.0"
+  }
+}

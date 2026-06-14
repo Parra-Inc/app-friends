@@ -1,0 +1,45 @@
+name: AppFriendsExample
+options:
+  bundleIdPrefix: dev.appfriends
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+
+packages:
+  AppFriends:
+    # The local Swift package (this repo's sdks/swift). Open in Xcode and it
+    # resolves against your working copy — edit the SDK and rebuild.
+    path: ..
+
+targets:
+  AppFriendsExample:
+    type: application
+    platform: iOS
+    sources:
+      - Sources
+    dependencies:
+      - package: AppFriends
+        product: AppFriends
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleDisplayName: Nimbus Weather
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        # Dev only: allow plain-HTTP to your local server (localhost in the
+        # Simulator, or your Mac's LAN IP on a device). Never ship this.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+    settings:
+      base:
+        # Pretend to BE Nimbus Weather (the seeded sample app) so the network
+        # returns its *friends* (Brightwords, Habit Garden) and never itself.
+        PRODUCT_BUNDLE_IDENTIFIER: com.nimbuslabs.weather
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO

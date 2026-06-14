@@ -1,0 +1,54 @@
+name: Publish npm package
+
+# Publishes @parra/app-friends (the React Native SDK) to npm when a version tag
+# is pushed. The same tag doubles as the Swift package's SPM version (SPM reads
+# git tags directly — no workflow needed for it). Tag format: vX.Y.Z, or a
+# prerelease like vX.Y.Z-alpha.N.
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # required for npm provenance
+    defaults:
+      run:
+        working-directory: sdks/react-native
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Resolve version + dist-tag from the pushed tag
+        id: meta
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"          # v0.1.0-alpha.0 -> 0.1.0-alpha.0
+          PKG="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} (=$TAG) does not match sdks/react-native/package.json version ($PKG). Bump the version and re-tag."
+            exit 1
+          fi
+          # A prerelease (0.1.0-alpha.0) publishes under its channel so it never
+          # becomes the default 'latest' that bare installs pull.
+          if [[ "$TAG" == *-* ]]; then
+            CHANNEL="${TAG#*-}"; CHANNEL="${CHANNEL%%.*}"   # alpha | beta | rc
+          else
+            CHANNEL="latest"
+          fi
+          echo "dist_tag=$CHANNEL" >> "$GITHUB_OUTPUT"
+          echo "Publishing $PKG under dist-tag '$CHANNEL'."
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - run: npm publish --provenance --access public --tag "${{ steps.meta.outputs.dist_tag }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

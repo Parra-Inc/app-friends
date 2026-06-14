@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "App Friends Example",
+    "slug": "appfriends-rn-example",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "bundleIdentifier": "com.nimbuslabs.weather"
+    },
+    "android": {
+      "package": "com.nimbuslabs.weather"
+    }
+  }
+}
