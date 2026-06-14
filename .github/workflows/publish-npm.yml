@@ -15,6 +15,10 @@ jobs:
     permissions:
       contents: read
       id-token: write # required for npm provenance
+    env:
+      # The JS actions below still ship Node 20, deprecated on the runners from
+      # 2026-06-16. Opt into Node 24 now so they keep working.
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     defaults:
       run:
         working-directory: sdks/react-native
