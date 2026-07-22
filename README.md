@@ -55,12 +55,13 @@ pnpm install
 pnpm dev          # docker up → schema sync → seed → servers
 ```
 
-`pnpm dev` runs [`scripts/dev.sh`](web/scripts/dev.sh): it brings up Postgres +
+`pnpm dev` runs [`scripts/dev.sh`](scripts/dev.sh): it brings up Postgres +
 MailHog, syncs the schema, **seeds a sample tenant** (see below), then starts the
-web app and Prisma Studio. Use `pnpm dev:force` to wipe the database and reseed
-from scratch, or `pnpm dev --no-seed` to skip seeding.
+web app. Use `pnpm dev:force` to wipe the database and reseed from scratch,
+`pnpm dev --no-seed` to skip seeding, `pnpm dev --studio` to also run Prisma
+Studio, or `pnpm dev:tunnel` to expose the server through ngrok for SDK testing.
 
-- Web / dashboard: http://localhost:3050
+- Web / dashboard: http://localhost:3053
 - MailHog inbox: http://localhost:8055
 - Prisma Studio: http://localhost:5575
 
@@ -71,7 +72,7 @@ The seed ([`scripts/seed.ts`](web/scripts/seed.ts)) creates a workspace you own 
 network inventory (an active pairing, a pending pairing request, and an approved
 sponsored campaign), and a couple weeks of analytics.
 
-- **Sign in:** open http://localhost:3050/auth/signin, enter
+- **Sign in:** open http://localhost:3053/auth/signin, enter
   `demo@appfriends.dev`, then click the magic link in
   [MailHog](http://localhost:8055). You land in the Nimbus Labs workspace.
 - **SDK key:** the sample tenant ships a stable publishable key,
@@ -79,7 +80,7 @@ sponsored campaign), and a couple weeks of analytics.
 
   ```bash
   curl -H 'Authorization: Bearer afp_dev_sample_publishable_key_00000001' \
-    'http://localhost:3050/api/v1/sdk/promotions?bundleId=com.nimbuslabs.weather'
+    'http://localhost:3053/api/v1/sdk/promotions?bundleId=com.nimbuslabs.weather'
   ```
 
 The marketing site and dashboard shell render with just `DATABASE_URL` and
