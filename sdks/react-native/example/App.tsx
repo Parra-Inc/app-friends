@@ -24,7 +24,7 @@ import {
 //
 // Derive the dev-server URL from Expo's host so this works on a real device in
 // Expo Go (not just the simulator). Falls back to localhost. The server runs on
-// :3050 (see web/scripts/dev.sh).
+// :3053 (see scripts/dev.sh).
 // ---------------------------------------------------------------------------
 function devBaseURL(): string {
   const hostUri =
@@ -33,8 +33,8 @@ function devBaseURL(): string {
     Constants.expoGoConfig?.debuggerHost ??
     "";
   const host = String(hostUri).split(":")[0];
-  if (host && host !== "localhost") return `http://${host}:3050`;
-  return "http://localhost:3050";
+  if (host && host !== "localhost") return `http://${host}:3053`;
+  return "http://localhost:3053";
 }
 
 AppFriends.configure({

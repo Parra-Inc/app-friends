@@ -13,7 +13,7 @@ fetch you render yourself.
 1. **Start the backend** and seed it (from the repo root):
 
    ```bash
-   cd web && pnpm dev      # http://localhost:3050, seeds the sample tenant
+   cd web && pnpm dev      # http://localhost:3053, seeds the sample tenant
    ```
 
 2. **Generate the Xcode project** (needs [XcodeGen](https://github.com/yonsm/XcodeGen)):
@@ -24,7 +24,7 @@ fetch you render yourself.
    open AppFriendsExample.xcodeproj
    ```
 
-3. **Run.** Pick an iOS Simulator and hit ▶. `http://localhost:3050` works from
+3. **Run.** Pick an iOS Simulator and hit ▶. `http://localhost:3053` works from
    the Simulator out of the box.
 
 ### On a real device
@@ -38,7 +38,7 @@ ipconfig getifaddr en0     # e.g. 192.168.1.20
 ```
 
 ```swift
-static let baseURL = URL(string: "http://192.168.1.20:3050")!
+static let baseURL = URL(string: "http://192.168.1.20:3053")!
 ```
 
 Put the phone on the same Wi-Fi. The Info.plist already allows local-network

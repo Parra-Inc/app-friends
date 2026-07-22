@@ -12,10 +12,10 @@ enum DevConfig {
 
     /// Your local App Friends server.
     ///
-    /// - Simulator: `http://localhost:3050` works as-is.
+    /// - Simulator: `http://localhost:3053` works as-is.
     /// - Real device: swap in your Mac's LAN IP, e.g.
-    ///   `http://192.168.1.20:3050` (find it with `ipconfig getifaddr en0`),
+    ///   `http://192.168.1.20:3053` (find it with `ipconfig getifaddr en0`),
     ///   and make sure your phone is on the same Wi-Fi. The Info.plist already
     ///   allows local-network HTTP for dev.
-    static let baseURL = URL(string: "http://localhost:3050")!
+    static let baseURL = URL(string: "http://localhost:3053")!
 }

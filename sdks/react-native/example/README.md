@@ -14,7 +14,7 @@ UI.
 1. **Start the backend** and seed it (from the repo root):
 
    ```bash
-   cd web && pnpm dev      # http://localhost:3050, seeds the sample tenant
+   cd web && pnpm dev      # http://localhost:3053, seeds the sample tenant
    ```
 
 2. **Install and start Expo** (from here):
