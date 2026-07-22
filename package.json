@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "bash scripts/dev.sh",
     "dev:force": "bash scripts/dev.sh --force",
-    "dev:ngrok": "bash scripts/dev.sh --ngrok",
+    "dev:tunnel": "bash scripts/dev.sh --tunnel",
     "dev:web": "cd web && pnpm dev:web",
-    "up": "cd web && docker compose up -d --wait",
-    "down": "cd web && docker compose down"
+    "up": "docker compose -f web/docker-compose.yml up -d --wait",
+    "down": "docker compose -f web/docker-compose.yml down"
   },
   "devDependencies": {
     "turbo": "^2.5.4"
