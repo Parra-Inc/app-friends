@@ -354,7 +354,7 @@ async function main() {
 
   console.log("\n── Sign in ──────────────────────────────────────────────");
   console.log(`  Email:    ${DEMO_USER.email}`);
-  console.log("  1. Open   http://localhost:3050/auth/signin");
+  console.log("  1. Open   http://localhost:3053/auth/signin");
   console.log(`  2. Enter  ${DEMO_USER.email}  → "Send link"`);
   console.log("  3. Click the magic link in MailHog: http://localhost:8055");
   console.log("     (lands in the Nimbus Labs workspace)");
@@ -364,7 +364,7 @@ async function main() {
   console.log("  Try it:");
   console.log(`    curl -H 'Authorization: Bearer ${sampleKey}' \\`);
   console.log(
-    "      'http://localhost:3050/api/v1/sdk/promotions?bundleId=com.nimbuslabs.weather'"
+    "      'http://localhost:3053/api/v1/sdk/promotions?bundleId=com.nimbuslabs.weather'"
   );
   if (habitKey) {
     console.log(`\n  (Habit Co publishable key, shown once: ${habitKey})`);

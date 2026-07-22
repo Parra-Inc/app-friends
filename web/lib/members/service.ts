@@ -5,7 +5,7 @@ import { sendEmail } from "@/lib/email/email-service";
 import { invitationEmail } from "@/lib/email/templates";
 import type { MemberRole } from "@prisma/client";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3050";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3053";
 
 export async function inviteMember(args: {
   workspaceId: string;

@@ -17,7 +17,7 @@ export function stripeConfigured(): boolean {
 }
 
 function siteUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3050";
+  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3053";
 }
 
 function proPriceId(): string {
