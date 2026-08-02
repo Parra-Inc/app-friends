@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://appfriends.dev";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://app-friends-web-production.ian-b42.workers.dev";
 
 export default function robots(): MetadataRoute.Robots {
   return {

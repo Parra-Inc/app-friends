@@ -12,7 +12,7 @@ const newsreader = Newsreader({
   weight: ["400", "500", "600"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://appfriends.dev";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://app-friends-web-production.ian-b42.workers.dev";
 
 const description =
   "App Friends is the cross-promotion network and SDK for app developers. Trade installs with apps that aren't your competition — for free, or for hire.";
