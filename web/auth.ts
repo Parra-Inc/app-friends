@@ -7,6 +7,7 @@ import Nodemailer from "next-auth/providers/nodemailer";
 import type { Provider } from "next-auth/providers";
 import { prisma } from "@/prisma/client";
 import { ensurePersonalWorkspace } from "@/lib/auth/provision";
+import { sendEmail } from "@/lib/email/email-service";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -55,18 +56,30 @@ if (process.env.AUTH_APPLE_ID) {
   );
 }
 
-// Email magic link — always available. Locally this delivers to MailHog
-// (http://localhost:8055); in prod point the SMTP server at Resend.
+// Email magic link — always available. Delivery routes through the canonical
+// email service: MailHog locally, Cloudflare Email Sending in prod.
 providers.push(
   Nodemailer({
-    server: {
-      host: process.env.MAILHOG_HOST || "localhost",
-      port: Number(process.env.MAILHOG_PORT || 1055),
-      auth: process.env.RESEND_API_KEY
-        ? { user: "resend", pass: process.env.RESEND_API_KEY }
-        : undefined,
-    },
+    // `server` is unused because we override `sendVerificationRequest`, but the
+    // provider still requires it to be present.
+    server: {},
     from: process.env.EMAIL_FROM || "App Friends <noreply@appfriends.dev>",
+    async sendVerificationRequest({ identifier, url }) {
+      const { host } = new URL(url);
+      await sendEmail({
+        to: identifier,
+        subject: `Sign in to ${host}`,
+        html: `<body style="font-family:system-ui,-apple-system,sans-serif;padding:24px">
+  <h2 style="margin:0 0 16px">Sign in to App Friends</h2>
+  <p style="margin:0 0 24px">Click the button below to sign in. This link expires shortly.</p>
+  <p style="margin:0 0 24px">
+    <a href="${url}" style="background:#111;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">Sign in</a>
+  </p>
+  <p style="margin:0;color:#666;font-size:13px">If you didn't request this, you can safely ignore this email.</p>
+</body>`,
+        text: `Sign in to App Friends\n\n${url}\n\nIf you didn't request this, you can safely ignore this email.`,
+      });
+    },
   })
 );
 

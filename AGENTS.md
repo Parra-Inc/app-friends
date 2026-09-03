@@ -18,7 +18,7 @@ brief; follow it for any user-facing copy or UI.
 - Prisma 7 (PostgreSQL 16), multi-file schema at `web/prisma/schema/`.
 - NextAuth 5 (Google + GitHub + Apple), JWT sessions.
 - Tailwind CSS 4 (PostCSS plugin).
-- Resend (prod) + MailHog (dev) via `lib/email/email-service.ts`.
+- Cloudflare Email Sending (prod) + MailHog (dev) via `lib/email/email-service.ts`.
 - Upstash Redis for rate-limit / idempotency (optional in dev).
 - Stripe for sponsored-campaign billing + Pro subscriptions.
 - pnpm. Local web on :3053, Postgres :5455, MailHog :8055, Studio :5575.

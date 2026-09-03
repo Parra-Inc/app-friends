@@ -54,7 +54,7 @@ export default function PrivacyPage() {
         <ul>
           <li>Stripe — payments.</li>
           <li>Neon / Vercel — hosting and database.</li>
-          <li>Resend — transactional email.</li>
+          <li>Cloudflare — transactional email.</li>
           <li>Upstash — rate limiting.</li>
         </ul>
 
