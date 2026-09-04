@@ -43,3 +43,6 @@ sdks/react-native/node_modules/
 
 # Vercel
 .vercel
+# Git worktrees (Claude Code)
+.worktrees/
+.claude/worktrees/
