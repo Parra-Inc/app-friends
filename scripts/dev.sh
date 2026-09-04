@@ -187,14 +187,40 @@ if $SEED; then
   fi
 fi
 
+# --- Portless routes (optional) ----------------------------------------------
+# Named *.app-friends.localhost URLs via portless (https://github.com/vercel-labs/portless),
+# optional: everything above works on plain ports with no portless installed.
+HAVE_PORTLESS=0
+PORTLESS_SUFFIX=""
+if command -v portless >/dev/null 2>&1; then
+  HAVE_PORTLESS=1
+  echo "→ syncing portless routes"
+  # Explicit --port 443 rather than a bare `proxy start`: portless replays
+  # whichever port the proxy last ran on, so once it has fallen back to an
+  # unprivileged port (no TTY to accept the sudo prompt) it stays there
+  # forever unless a run asks for 443 again. Left unsuppressed so the sudo
+  # prompt (and any fallback notice) is visible in an interactive terminal.
+  portless proxy start --port 443 --https || true
+  portless alias app-friends "$WEB_PORT" --force >/dev/null 2>&1 || true
+  portless alias studio.app-friends "$STUDIO_PORT" --force >/dev/null 2>&1 || true
+  portless alias mailhog.app-friends "$MAILHOG_PORT" --force >/dev/null 2>&1 || true
+  found_port=$(portless list 2>/dev/null | grep -o 'app-friends\.localhost:[0-9]*' | head -1 | cut -d: -f2 || true)
+  if [ -n "$found_port" ] && [ "$found_port" != "443" ]; then
+    PORTLESS_SUFFIX=":$found_port"
+  fi
+fi
+
 # --- Banner --------------------------------------------------------------------
 LAN_IP=$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || echo "")
 echo ""
 printf "${C_BOLD}  App Friends${C_RESET}\n"
 printf "  ${C_ACCENT}Local${C_RESET}     http://localhost:%s\n" "$WEB_PORT"
 [ -n "$LAN_IP" ] && printf "  ${C_ACCENT}Network${C_RESET}   http://%s:%s\n" "$LAN_IP" "$WEB_PORT"
+[ "$HAVE_PORTLESS" = "1" ] && printf "  ${C_ACCENT}Named${C_RESET}     https://app-friends.localhost%s\n" "$PORTLESS_SUFFIX"
 printf "  ${C_ACCENT}MailHog${C_RESET}   http://localhost:%s\n" "$MAILHOG_PORT"
+[ "$HAVE_PORTLESS" = "1" ] && printf "  ${C_ACCENT}MailHog${C_RESET}   https://mailhog.app-friends.localhost%s\n" "$PORTLESS_SUFFIX"
 $STUDIO && printf "  ${C_ACCENT}Studio${C_RESET}    http://localhost:%s\n" "$STUDIO_PORT"
+$STUDIO && [ "$HAVE_PORTLESS" = "1" ] && printf "  ${C_ACCENT}Studio${C_RESET}    https://studio.app-friends.localhost%s\n" "$PORTLESS_SUFFIX"
 printf "  ${C_ACCENT}Postgres${C_RESET}  %s\n" "$DATABASE_URL"
 if [ -n "$NGROK_URL" ]; then
   printf "  ${C_ACCENT}Tunnel${C_RESET}    %s\n" "$NGROK_URL"
