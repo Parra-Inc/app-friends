@@ -84,7 +84,7 @@ sponsored campaign), and a couple weeks of analytics.
   ```
 
 The marketing site and dashboard shell render with just `DATABASE_URL` and
-`AUTH_SECRET`. Everything else (`STRIPE_*`, App Store Connect, Upstash, Resend)
+`AUTH_SECRET`. Everything else (`STRIPE_*`, App Store Connect, Upstash, email)
 unlocks progressively. See [`web/.env.example`](web/.env.example).
 
 ## SDKs
@@ -106,5 +106,5 @@ Architecture and data model: [`docs/PLAN.md`](docs/PLAN.md). Brand and voice:
 ## Stack
 
 Next.js 16 · React 19 · TypeScript 5 · Prisma 7 + PostgreSQL 16 · NextAuth 5 ·
-Tailwind 4 · Stripe · Resend + MailHog · Upstash (rate-limit) · Swift 6 /
+Tailwind 4 · Stripe · Cloudflare Email + MailHog · Upstash (rate-limit) · Swift 6 /
 SwiftUI · React Native. pnpm.
