@@ -9,7 +9,8 @@
     "dev:tunnel": "bash scripts/dev.sh --tunnel",
     "dev:web": "cd web && pnpm dev:web",
     "up": "docker compose -f web/docker-compose.yml up -d --wait",
-    "down": "docker compose -f web/docker-compose.yml down"
+    "down": "docker compose -f web/docker-compose.yml down",
+    "check": "bash scripts/check.sh"
   },
   "devDependencies": {
     "turbo": "^2.5.4"
