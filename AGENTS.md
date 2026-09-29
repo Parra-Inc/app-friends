@@ -51,6 +51,16 @@ Prefixed UUID ids: `usr_`, `wsp_`, `mbr_`, `inv_`, `app_`, `key_`, `par_`
 - Both target the same API contract. Keep request/response shapes in sync with
   `web/lib/sdk/contract.ts` (the source of truth).
 
+## Before you push
+
+Run `pnpm check` before pushing. It runs, in order: Prisma generate (web),
+eslint (web), `tsc --noEmit` (web), `next build` (web), `tsc --noEmit` and
+`tsc` build (sdks/react-native). Takes about a minute with dependencies
+already installed. Dummy env values are set only when unset, so your real
+`.env` still wins. There is no GitHub Actions workflow that runs these steps
+on a pull request or push yet, so this is the only verification signal until
+one is added. If you change what CI runs, update check to match.
+
 ## Commit style
 
 - Don't commit unless asked.
