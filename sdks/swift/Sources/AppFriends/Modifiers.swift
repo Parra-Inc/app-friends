@@ -1,4 +1,7 @@
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// Overlays the popup or full-screen unit driven by a `Bool` binding.
 ///
@@ -13,13 +16,14 @@ struct AppFriendsPopupModifier: ViewModifier {
 
     @State private var promo: Promo?
     @State private var loading = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
         content
             .overlay {
                 if let promo {
                     promoView(promo)
-                        .transition(.opacity)
+                        .transition(reduceMotion ? .identity : .opacity)
                 }
             }
             .task(id: isPresented) {
@@ -64,6 +68,13 @@ struct AppFriendsPopupModifier: ViewModifier {
     private func dismiss() {
         promo = nil
         isPresented = false
+        // Hand VoiceOver focus back to the underlying screen once the overlay
+        // is gone.
+        #if canImport(UIKit)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            UIAccessibility.post(notification: .screenChanged, argument: nil)
+        }
+        #endif
     }
 }
 
