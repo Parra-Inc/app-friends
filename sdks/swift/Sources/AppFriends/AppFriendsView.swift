@@ -96,6 +96,7 @@ struct AppFriendsBanner: View {
                         .lineLimit(1)
                 }
             }
+            .accessibilityElement(children: .combine)
 
             Spacer(minLength: 8)
 
@@ -108,7 +109,7 @@ struct AppFriendsBanner: View {
                 .strokeBorder(Color.primary.opacity(0.08), lineWidth: 0.5)
         )
         .onAppear { AppFriends.reportImpression(promo) }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
     }
 
     private func tapGet() {

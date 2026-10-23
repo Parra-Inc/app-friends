@@ -3,6 +3,14 @@ import SwiftUI
 /// A "Sponsored" disclosure tag. The built-in views show this automatically for
 /// paid placements; you don't normally place it yourself.
 struct SponsoredTag: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    /// Darker coral for text on light backgrounds so the small caption meets
+    /// 4.5:1 contrast. The brand coral is legible enough on dark backgrounds.
+    private var textColor: Color {
+        colorScheme == .dark ? AppFriendsTheme.coral : Color(hex: 0xB23A2E)
+    }
+
     var body: some View {
         Text("Sponsored")
             .font(.caption2.weight(.semibold))
@@ -10,7 +18,7 @@ struct SponsoredTag: View {
             .tracking(0.4)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
-            .foregroundStyle(AppFriendsTheme.coral)
+            .foregroundStyle(textColor)
             .background(AppFriendsTheme.coral.opacity(0.12), in: Capsule())
             .accessibilityLabel("Sponsored")
     }
@@ -85,8 +93,10 @@ struct GetButton: View {
                 .font(.subheadline.weight(.bold))
                 .padding(.horizontal, 22)
                 .padding(.vertical, 8)
+                .frame(minHeight: 44)
                 .foregroundStyle(.white)
                 .background(accent, in: Capsule())
+                .contentShape(Capsule())
         }
         .buttonStyle(.plain)
     }

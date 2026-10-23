@@ -20,6 +20,8 @@ public struct AppFriendsFullScreenView: View {
 
     @Environment(\.openURL) private var openURL
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @AccessibilityFocusState private var ctaFocused: Bool
     @State private var shown = false
 
     /// Creates a full-screen takeover.
@@ -63,6 +65,8 @@ public struct AppFriendsFullScreenView: View {
                 .padding(20)
         }
         .colorScheme(.dark)
+        .accessibilityAddTraits(.isModal)
+        .accessibilityAction(.escape) { dismiss() }
         .opacity(shown ? 1 : 0)
         .offset(y: shown ? 0 : 24)
         .onAppear {
@@ -75,6 +79,7 @@ public struct AppFriendsFullScreenView: View {
                     shown = true
                 }
             }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { ctaFocused = true }
         }
     }
 
@@ -87,6 +92,7 @@ public struct AppFriendsFullScreenView: View {
                     Text(promo.appName)
                         .font(.title2.weight(.bold))
                         .multilineTextAlignment(.center)
+                        .accessibilityAddTraits(.isHeader)
                     if promo.sponsored { SponsoredTag() }
                 }
                 if let subtitle = promo.displaySubtitle {
@@ -100,6 +106,7 @@ public struct AppFriendsFullScreenView: View {
                         .padding(.top, 2)
                 }
             }
+            .accessibilityElement(children: .combine)
         }
     }
 
@@ -140,11 +147,18 @@ public struct AppFriendsFullScreenView: View {
                     .background(accent, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             }
             .buttonStyle(.plain)
+            .accessibilityFocused($ctaFocused)
             .padding(.horizontal, 24)
             .padding(.top, 16)
             .padding(.bottom, 32)
         }
-        .background(.ultraThinMaterial)
+        .background {
+            if reduceTransparency {
+                Color(.sRGB, white: 0.1)
+            } else {
+                Rectangle().fill(.ultraThinMaterial)
+            }
+        }
     }
 
     private func tapGet() {

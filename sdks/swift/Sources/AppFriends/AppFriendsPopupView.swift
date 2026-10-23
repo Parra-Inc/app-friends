@@ -24,6 +24,7 @@ public struct AppFriendsPopupView: View {
 
     @Environment(\.openURL) private var openURL
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @AccessibilityFocusState private var ctaFocused: Bool
     @State private var shown = false
 
     /// Creates a popup card.
@@ -54,6 +55,8 @@ public struct AppFriendsPopupView: View {
                 .scaleEffect(shown ? 1 : 0.96)
                 .opacity(shown ? 1 : 0)
         }
+        .accessibilityAddTraits(.isModal)
+        .accessibilityAction(.escape) { dismiss() }
         .onAppear {
             AppFriends.reportImpression(promo)
             if reduceMotion {
@@ -63,6 +66,7 @@ public struct AppFriendsPopupView: View {
                     shown = true
                 }
             }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { ctaFocused = true }
         }
     }
 
@@ -76,6 +80,7 @@ public struct AppFriendsPopupView: View {
                         Text(promo.appName)
                             .font(.headline)
                             .lineLimit(1)
+                            .accessibilityAddTraits(.isHeader)
                         if promo.sponsored { SponsoredTag() }
                     }
                     if let subtitle = promo.displaySubtitle {
@@ -89,6 +94,7 @@ public struct AppFriendsPopupView: View {
                             .padding(.top, 2)
                     }
                 }
+                .accessibilityElement(children: .combine)
                 Spacer(minLength: 0)
             }
 
@@ -100,6 +106,7 @@ public struct AppFriendsPopupView: View {
                 }
                 Spacer()
                 GetButton(title: promo.cta, accent: accent) { tapGet() }
+                    .accessibilityFocused($ctaFocused)
             }
         }
         .padding(20)
@@ -134,13 +141,24 @@ public struct AppFriendsPopupView: View {
 struct CloseButton: View {
     let action: () -> Void
 
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @ScaledMetric(relativeTo: .footnote) private var glyphSize: CGFloat = 11
+
     var body: some View {
         Button(action: action) {
             Image(systemName: "xmark")
-                .font(.system(size: 11, weight: .bold))
+                .font(.system(size: glyphSize, weight: .bold))
                 .foregroundStyle(.secondary)
                 .padding(7)
-                .background(.thinMaterial, in: Circle())
+                .background {
+                    if reduceTransparency {
+                        Circle().fill(Color.gray.opacity(0.3)).background(Circle().fill(.background))
+                    } else {
+                        Circle().fill(.thinMaterial)
+                    }
+                }
+                .frame(minWidth: 44, minHeight: 44)
+                .contentShape(Circle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Close")
