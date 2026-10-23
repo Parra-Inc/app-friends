@@ -147,6 +147,8 @@ public struct AppFriendsFullScreenView: View {
                     .background(accent, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("\(promo.cta) \(promo.appName)")
+            .accessibilityHint("Opens the App Store")
             .accessibilityFocused($ctaFocused)
             .padding(.horizontal, 24)
             .padding(.top, 16)

@@ -86,21 +86,21 @@ struct AppFriendsBanner: View {
                 HStack(spacing: 6) {
                     Text(promo.appName)
                         .font(.subheadline.weight(.semibold))
-                        .lineLimit(1)
+                        .lineLimit(2)
                     if promo.sponsored { SponsoredTag() }
                 }
                 if let subtitle = promo.displaySubtitle {
                     Text(subtitle)
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .lineLimit(2)
                 }
             }
             .accessibilityElement(children: .combine)
 
             Spacer(minLength: 8)
 
-            GetButton(title: promo.cta, accent: accent) { tapGet() }
+            GetButton(title: promo.cta, appName: promo.appName, accent: accent) { tapGet() }
         }
         .padding(12)
         .background(.background, in: RoundedRectangle(cornerRadius: 16, style: .continuous))

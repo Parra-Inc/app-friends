@@ -105,7 +105,7 @@ public struct AppFriendsPopupView: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                GetButton(title: promo.cta, accent: accent) { tapGet() }
+                GetButton(title: promo.cta, appName: promo.appName, accent: accent) { tapGet() }
                     .accessibilityFocused($ctaFocused)
             }
         }

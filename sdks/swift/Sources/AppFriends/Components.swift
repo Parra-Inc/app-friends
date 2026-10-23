@@ -82,8 +82,10 @@ struct AppIcon: View {
 }
 
 /// The pill "Get" CTA used by both built-in views.
+/// Hosts supplying a custom accent should keep it at 4.5:1 contrast against white text.
 struct GetButton: View {
     let title: String
+    var appName: String? = nil
     let accent: Color
     let action: () -> Void
 
@@ -99,5 +101,7 @@ struct GetButton: View {
                 .contentShape(Capsule())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(appName.map { "\(title) \($0)" } ?? title)
+        .accessibilityHint("Opens the App Store")
     }
 }
