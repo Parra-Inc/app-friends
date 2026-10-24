@@ -26,18 +26,6 @@ export const metadata: Metadata = {
   description,
   applicationName: "App Friends",
   category: "developer tools",
-  keywords: [
-    "app cross-promotion",
-    "cross promotion network",
-    "mobile app marketing",
-    "user acquisition",
-    "iOS SDK",
-    "React Native SDK",
-    "app install exchange",
-    "view for view",
-    "indie app developers",
-    "app advertising",
-  ],
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
