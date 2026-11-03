@@ -1,0 +1,50 @@
+{
+  "outDir": "public/fonts",
+  "cssOut": "app/fonts.css",
+  "variablesSelector": "html.fonts",
+  "families": [
+    {
+      "family": "Geist",
+      "source": "scripts/fonts/src/Geist.ttf",
+      "axes": { "wght": "400:900" },
+      "features": ["ccmp", "locl", "mark", "mkmk", "kern", "liga", "calt", "rlig", "rvrn", "tnum"],
+      "usedCodepoints": "scripts/fonts/usage.json",
+      "usageKeys": ["Geist"],
+      "alsoKeep": "•·−×÷±≈≤≥→←↑↓€£™®©°′″✓✕✗",
+      "display": "swap",
+      "fallbackCss": "@font-face { font-family: \"Geist Fallback\"; src: local(\"Arial\"); ascent-override: 95.94%; descent-override: 28.16%; line-gap-override: 0.0%; size-adjust: 104.76%; }",
+      "variable": "--font-geist-sans",
+      "renderedBy": "scripts/fonts/coverage-geist.json",
+      "coreExtra": "©·•"
+    },
+    {
+      "family": "Geist Mono",
+      "source": "scripts/fonts/src/GeistMono.ttf",
+      "axes": { "wght": "400:900" },
+      "features": ["ccmp", "locl", "mark", "mkmk", "kern", "liga", "calt", "rlig", "rvrn"],
+      "usedCodepoints": "scripts/fonts/usage.json",
+      "usageKeys": ["Geist Mono"],
+      "alsoKeep": "×÷±−≈≤≥→°",
+      "display": "swap",
+      "fallbackCss": "@font-face { font-family: \"Geist Mono Fallback\"; src: local(\"Arial\"); ascent-override: 74.67%; descent-override: 21.92%; line-gap-override: 0.0%; size-adjust: 134.59%; }",
+      "variable": "--font-geist-mono",
+      "renderedBy": "scripts/fonts/coverage-geist-mono.json"
+    },
+    {
+      "family": "Newsreader",
+      "source": [
+        "scripts/fonts/src/Newsreader-google-latin.woff2",
+        "scripts/fonts/src/Newsreader-google-latin-ext.woff2"
+      ],
+      "axes": { "wght": "400:800" },
+      "features": ["ccmp", "locl", "mark", "mkmk", "kern", "liga", "calt", "rlig", "rvrn", "tnum"],
+      "usedCodepoints": "scripts/fonts/usage.json",
+      "usageKeys": ["Newsreader"],
+      "alsoKeep": "&?!",
+      "display": "swap",
+      "fallbackCss": "@font-face { font-family: \"Newsreader Fallback\"; src: local(\"Times New Roman\"); ascent-override: 69.68%; descent-override: 25.12%; line-gap-override: 0.0%; size-adjust: 105.48%; }",
+      "variable": "--font-newsreader",
+      "renderedBy": "scripts/fonts/coverage-newsreader.json"
+    }
+  ]
+}
