@@ -25,6 +25,7 @@ const groups = [
     links: [
       { href: "/privacy", label: "Privacy" },
       { href: "/terms", label: "Terms" },
+      { href: "/feedback", label: "Send feedback" },
       { href: "mailto:hello@appfriends.dev", label: "Contact" },
     ],
   },
@@ -38,8 +39,8 @@ export function Footer() {
           <div>
             <Logo />
             <p className="mt-3 max-w-xs text-sm text-muted">
-              Trade installs with apps that aren&apos;t your competition. Free to
-              join, free to pair.
+              Trade installs with apps that aren&apos;t your competition. Free
+              to join, free to pair.
             </p>
           </div>
           {groups.map((g) => (
