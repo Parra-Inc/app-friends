@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
+import { FeedbackDialog } from "@/components/feedback/feedback-form";
+
+// The footer group that ends with the Send feedback modal trigger.
+const GROUP_WITH_FEEDBACK = "Company";
 
 const groups = [
   {
@@ -38,8 +42,8 @@ export function Footer() {
           <div>
             <Logo />
             <p className="mt-3 max-w-xs text-sm text-muted">
-              Trade installs with apps that aren&apos;t your competition. Free to
-              join, free to pair.
+              Trade installs with apps that aren&apos;t your competition. Free
+              to join, free to pair.
             </p>
           </div>
           {groups.map((g) => (
@@ -58,6 +62,11 @@ export function Footer() {
                     </Link>
                   </li>
                 ))}
+                {g.title === GROUP_WITH_FEEDBACK && (
+                  <li>
+                    <FeedbackDialog className="cursor-pointer text-sm text-ink-soft transition-colors hover:text-ink" />
+                  </li>
+                )}
               </ul>
             </div>
           ))}
