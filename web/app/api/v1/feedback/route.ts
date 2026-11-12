@@ -3,12 +3,14 @@ import { z } from "zod";
 import { FEEDBACK_KINDS, forwardFeedbackToRevenueHog } from "@/lib/revenuehog";
 import { rateLimit } from "@/lib/queue/ratelimit";
 
+// Lenient on purpose: a typo in an optional reply address drops the address,
+// never the message.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const feedbackSchema = z.object({
   category: z.enum(FEEDBACK_KINDS),
   message: z.string().trim().min(1).max(5000),
-  email: z
-    .union([z.string().trim().email().max(320), z.literal("")])
-    .optional(),
+  email: z.string().trim().max(320).optional(),
   page: z.string().max(512).optional(),
 });
 
@@ -37,7 +39,7 @@ export async function POST(request: Request) {
   const result = await forwardFeedbackToRevenueHog({
     kind: data.category,
     message: data.message,
-    email: data.email || null,
+    email: data.email && EMAIL_PATTERN.test(data.email) ? data.email : null,
     page: data.page ?? null,
     userAgent: request.headers.get("user-agent"),
   });

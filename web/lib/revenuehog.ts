@@ -28,6 +28,7 @@ export async function forwardFeedbackToRevenueHog(
   }
 
   const metadata: Record<string, string> = {};
+  metadata.originalCategory = payload.kind;
   if (payload.email) metadata.email = payload.email;
   if (payload.page) metadata.page = payload.page;
   if (payload.userAgent) metadata.userAgent = payload.userAgent.slice(0, 512);
